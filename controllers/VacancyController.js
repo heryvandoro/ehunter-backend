@@ -2,12 +2,16 @@ const router = require('express').Router();
 const db = require("../db.js");
 
 router.get("/", async (req, res) => {
-    let vacancies = await db.Vacancy.findAll();
+    let vacancies = await db.Vacancy.findAll({
+        include : [ { model : db.Requirement } ]
+    });
     res.send(vacancies);
 });
 
 router.get("/:id", async (req, res) => {
-    let vacancy = await db.Vacancy.findById(req.params.id);
+    let vacancy = await db.Vacancy.findById(req.params.id, {
+        include : [ { model : db.Requirement } ]
+    });
     if(!vacancy) res.send({ messages : "data not found" });
     res.send(vacancy);
 });
@@ -19,6 +23,21 @@ router.post("/", async (req, res) => {
         salary_start : req.body.salary_start,
         salary_end : req.body.salary_end,
         description : req.body.description
+    });
+
+    let requirements = req.body.requirements;
+    let promises = [];
+    requirements.forEach(requirement => {
+        let prom = db.Requirement.create({
+            vacancy_id : vacancy.id,
+            text : requirement
+        });
+        promises.push(prom);
+    });
+    await Promise.all(promises);
+    
+    vacancy = await db.Vacancy.findById(vacancy.id, {
+        include : [ { model : db.Requirement } ]
     });
     res.send(vacancy);
 });
@@ -34,6 +53,24 @@ router.patch("/:id", async (req, res) => {
     vacancy.description = req.body.description;
 
     vacancy = await vacancy.save();
+
+    await db.Requirement.destroy({ where : { vacancy_id : req.params.id } });
+
+    let requirements = req.body.requirements;
+    let promises = [];
+    requirements.forEach(requirement => {
+        let prom = db.Requirement.create({
+            vacancy_id : vacancy.id,
+            text : requirement
+        });
+        promises.push(prom);
+    });
+    await Promise.all(promises);
+    
+    vacancy = await db.Vacancy.findById(req.params.id, {
+        include : [ { model : db.Requirement } ]
+    });
+
     res.send(vacancy);
 });
 

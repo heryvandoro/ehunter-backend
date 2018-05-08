@@ -10,7 +10,7 @@ db.seq = new Sequelize('ehunter', 'ehunter', 'ehunter_ehunter', {
 		min: 0,
 		acquire: 30000,
 		idle: 10000
-	},
+	}
 });
 
 db.Hunter = db.seq.define("hunters", {
@@ -24,7 +24,7 @@ db.Hunter = db.seq.define("hunters", {
 	password : Sequelize.STRING,
 	cv : Sequelize.STRING,
 	cv_raw : Sequelize.STRING
-}, { timestamps: false });
+}, { timestamps: false, underscored: true });
 
 db.Company = db.seq.define("companies", {
 	id : {
@@ -36,7 +36,7 @@ db.Company = db.seq.define("companies", {
 	email : Sequelize.STRING,
 	password : Sequelize.STRING,
 	description : Sequelize.STRING
-}, { timestamps: false });
+}, { timestamps: false, underscored: true });
 
 db.Vacancy = db.seq.define("vacancies", {
 	id : {
@@ -49,7 +49,7 @@ db.Vacancy = db.seq.define("vacancies", {
 	salary_start : Sequelize.INTEGER,
 	salary_end : Sequelize.INTEGER,
 	description : Sequelize.STRING
-}, { timestamps: false });
+}, { timestamps: false, underscored: true });
 
 db.Requirement = db.seq.define("requirements", {
 	id : {
@@ -59,6 +59,11 @@ db.Requirement = db.seq.define("requirements", {
 	},
 	vacancy_id : Sequelize.INTEGER,
 	text : Sequelize.STRING
-}, { timestamps: false });
+}, { timestamps: false, underscored: true });
+
+
+/* Relations Section */
+db.Vacancy.hasMany(db.Requirement);
+db.Requirement.belongsTo(db.Vacancy);
 
 module.exports = db;
