@@ -26,4 +26,16 @@ db.Hunter = db.seq.define("hunters", {
 	cv_raw : Sequelize.STRING
 }, { timestamps: false });
 
+db.Company = db.seq.define("companies", {
+	id : {
+		type : Sequelize.INTEGER,
+		primaryKey : true,
+		autoIncrement: true
+	},
+	name : Sequelize.STRING,
+	email : Sequelize.STRING,
+	password : Sequelize.STRING,
+	description : Sequelize.STRING
+}, { timestamps: false });
+
 module.exports = db;
