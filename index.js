@@ -1,5 +1,8 @@
 const app = require('express')();
+const bodyParser = require('body-parser');
 const PORT = 3000;
+
+app.use(bodyParser.json())
 
 app.use('/hunters', require("./controllers/HunterController.js"));
 
