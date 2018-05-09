@@ -5,6 +5,7 @@ const path = require('path');
 const XLSX = require('xlsx');
 const pdfText = require('pdf-text')
 const WordExtractor = require("word-extractor");
+const vision = require('@google-cloud/vision');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -88,6 +89,12 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
         let extractor = new WordExtractor();
         let extracted = await extractor.extract(file.path);
         result = extracted.getBody();
+    }else if(["png", "jpg", "jpeg"].indexOf(ext) !== -1){
+        const client = new vision.ImageAnnotatorClient({
+            keyFilename: 'ehunter_key_google.json'
+        });
+        let text_detect = await client.textDetection(file.path);
+        result = text_detect[0].fullTextAnnotation.text;
     }else{
         res.send({ messages : "format file undefined" })
     }
