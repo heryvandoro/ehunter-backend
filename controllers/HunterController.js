@@ -3,6 +3,7 @@ const db = require("../db.js");
 const multer = require("multer");
 const path = require('path');
 const XLSX = require('xlsx');
+const pdfText = require('pdf-text')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -77,12 +78,23 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
                 result += `${d[x]} `;
             });
         });
-        hunter.cv = file_name;
         hunter.cv_raw = result;
+    }else if(["pdf"].indexOf(ext) !== -1){
+        let result = "";
+        await new Promise(function(resolve, reject){
+            pdfText(file.path, function(err, chunks) {
+                chunks.forEach(c => {
+                    result += `${c} `;
+                });
+                return resolve();
+            });
+        })
+        hunter.cv_raw = result;
+        console.log(result);
     }else{
         console.log("format file undefined")
     }
-
+    hunter.cv = file_name;
     await hunter.save();
     res.send(hunter);
 });
