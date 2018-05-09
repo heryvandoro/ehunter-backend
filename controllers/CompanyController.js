@@ -2,12 +2,17 @@ const router = require('express').Router();
 const db = require("../db.js");
 
 router.get("/", async (req, res) => {
-    let companies = await db.Company.findAll();
+    let companies = await db.Company.findAll({
+        order : [ ["id", "desc"] ],
+        include : [ { model : db.Vacancy } ]
+    });
     res.send(companies);
 });
 
 router.get("/:id", async (req, res) => {
-    let company = await db.Company.findById(req.params.id);
+    let company = await db.Company.findById(req.params.id, {
+        include : [ { model : db.Vacancy } ]
+    });
     if(!company) res.send({ messages : "data not found" });
     res.send(company);
 });

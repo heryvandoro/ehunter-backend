@@ -71,10 +71,19 @@ db.Category = db.seq.define("categories", {
 	parent_id : Sequelize.INTEGER
 }, { timestamps: false, underscored: true });
 
+db.HunterVacancy = db.seq.define("hunter_vacancy", {
+	hunter_id : Sequelize.INTEGER,
+	vacancy_id : Sequelize.INTEGER,
+	status : Sequelize.INTEGER
+}, { timestamps: false, underscored: true, freezeTableName : true });
 
 /* Relations Section */
+db.Company.hasMany(db.Vacancy);
+db.Vacancy.belongsTo(db.Company);
 db.Vacancy.hasMany(db.Requirement);
 db.Requirement.belongsTo(db.Vacancy);
+db.Hunter.belongsToMany(db.Vacancy, { through: db.HunterVacancy });
+db.Vacancy.belongsToMany(db.Hunter, { through: db.HunterVacancy });
 db.Category.isHierarchy({
     foreignKey : "parent_id",
     throughKey : "children_id",

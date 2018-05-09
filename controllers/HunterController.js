@@ -2,12 +2,17 @@ const router = require('express').Router();
 const db = require("../db.js");
 
 router.get("/", async (req, res) => {
-    let hunters = await db.Hunter.findAll();
+    let hunters = await db.Hunter.findAll({
+        order : [ ["id", "desc"] ],
+        include : [ { model : db.Vacancy, include : [ { model : db.Company } ] } ]
+    });
     res.send(hunters);
 });
 
 router.get("/:id", async (req, res) => {
-    let hunter = await db.Hunter.findById(req.params.id);
+    let hunter = await db.Hunter.findById(req.params.id, {
+        include : [ { model : db.Vacancy, include : [ { model : db.Company } ] } ]
+    });
     if(!hunter) res.send({ messages : "data not found" });
     res.send(hunter);
 });

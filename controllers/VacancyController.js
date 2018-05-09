@@ -3,14 +3,14 @@ const db = require("../db.js");
 
 router.get("/", async (req, res) => {
     let vacancies = await db.Vacancy.findAll({
-        include : [ { model : db.Requirement } ]
+        include : [ { model : db.Requirement }, { model : db.Hunter }, { model : db.Company } ]
     });
     res.send(vacancies);
 });
 
 router.get("/:id", async (req, res) => {
     let vacancy = await db.Vacancy.findById(req.params.id, {
-        include : [ { model : db.Requirement } ]
+        include : [ { model : db.Requirement }, { model : db.Hunter }, { model : db.Company } ]
     });
     if(!vacancy) res.send({ messages : "data not found" });
     res.send(vacancy);
@@ -72,6 +72,17 @@ router.patch("/:id", async (req, res) => {
     });
 
     res.send(vacancy);
+});
+
+router.post("/:id/apply", async (req, res) => {
+    let vacancy = await db.Vacancy.findById(req.params.id);
+    if(!vacancy) res.send({ messages : "data not found" });
+
+    let apply = await db.HunterVacancy.create({
+        hunter_id : req.body.hunter_id,
+        vacancy_id : vacancy.id 
+    });
+    res.send({ messages : "success" });
 });
 
 router.delete("/:id", async (req, res) => {
