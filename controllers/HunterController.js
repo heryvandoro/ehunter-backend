@@ -2,6 +2,7 @@ const router = require('express').Router();
 const db = require("../db.js");
 const multer = require("multer");
 const path = require('path');
+const XLSX = require('xlsx');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -62,8 +63,28 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
     let hunter = await db.Hunter.findById(req.params.id);
     if(!hunter) res.send({ messages : "data not found" });
 
-    console.log(req.files);
-    res.sendStatus(200);
+    let file = req.file;
+    let file_name = file.filename;
+    let ext = file_name.substr(file_name.lastIndexOf(".") + 1, 4);
+    
+    if(["xls", "xlsx"].indexOf(ext) !== -1){
+        let workbook = XLSX.readFile(file.path);
+        let sheets = workbook.SheetNames;
+        let data = XLSX.utils.sheet_to_json(workbook.Sheets[sheets[0]]);
+        let result = "";
+        data.forEach(d => {
+            Object.keys(d).forEach(x => {
+                result += `${d[x]} `;
+            });
+        });
+        hunter.cv = file_name;
+        hunter.cv_raw = result;
+    }else{
+        console.log("format file undefined")
+    }
+
+    await hunter.save();
+    res.send(hunter);
 });
 
 module.exports = router;
