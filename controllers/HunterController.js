@@ -1,5 +1,17 @@
 const router = require('express').Router();
 const db = require("../db.js");
+const multer = require("multer");
+const path = require('path');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+})
+const upload = multer({ storage: storage });
 
 router.get("/", async (req, res) => {
     let hunters = await db.Hunter.findAll({
@@ -22,8 +34,6 @@ router.post("/", async (req, res) => {
         name : req.body.name,
         email : req.body.email,
         password : req.body.password,
-        cv : req.body.cv,
-        cv_raw : req.body.cv_raw
     });
     res.send(hunter);
 });
@@ -35,8 +45,6 @@ router.patch("/:id", async (req, res) => {
     hunter.name = req.body.name;
     hunter.email = req.body.email;
     hunter.password = req.body.password;
-    hunter.cv = req.body.cv;
-    hunter.cv_raw = req.body.cv_raw;
 
     hunter = await hunter.save();
     res.send(hunter);
@@ -48,6 +56,14 @@ router.delete("/:id", async (req, res) => {
 
     hunter.destroy();
     res.send({ messages : "success" });
+});
+
+router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
+    let hunter = await db.Hunter.findById(req.params.id);
+    if(!hunter) res.send({ messages : "data not found" });
+
+    console.log(req.files);
+    res.sendStatus(200);
 });
 
 module.exports = router;
