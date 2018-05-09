@@ -4,6 +4,7 @@ const multer = require("multer");
 const path = require('path');
 const XLSX = require('xlsx');
 const pdfText = require('pdf-text')
+const WordExtractor = require("word-extractor");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -67,33 +68,33 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
     let file = req.file;
     let file_name = file.filename;
     let ext = file_name.substr(file_name.lastIndexOf(".") + 1, 4);
-    
+    let result = "";
+
     if(["xls", "xlsx"].indexOf(ext) !== -1){
         let workbook = XLSX.readFile(file.path);
         let sheets = workbook.SheetNames;
         let data = XLSX.utils.sheet_to_json(workbook.Sheets[sheets[0]]);
-        let result = "";
         data.forEach(d => {
-            Object.keys(d).forEach(x => {
-                result += `${d[x]} `;
-            });
+            Object.keys(d).forEach(x => { result += `${d[x]} `; });
         });
-        hunter.cv_raw = result;
     }else if(["pdf"].indexOf(ext) !== -1){
-        let result = "";
         await new Promise(function(resolve, reject){
             pdfText(file.path, function(err, chunks) {
-                chunks.forEach(c => {
-                    result += `${c} `;
-                });
+                chunks.forEach(c => { result += `${c} `; });
                 return resolve();
             });
         })
-        hunter.cv_raw = result;
-        console.log(result);
+    }else if(["doc", "docx"].indexOf(ext) !== -1){
+        let extractor = new WordExtractor();
+        let extracted = await extractor.extract(file.path);
+        result = extracted.getBody();
     }else{
-        console.log("format file undefined")
+        res.send({ messages : "format file undefined" })
     }
+
+    result = result.replace(/\s\s+/g, ' ');
+    result = result.replace(/[^\w\s]/gi, '');
+    hunter.cv_raw = result;
     hunter.cv = file_name;
     await hunter.save();
     res.send(hunter);
