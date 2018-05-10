@@ -6,6 +6,7 @@ const XLSX = require('xlsx');
 const pdfText = require('pdf-text')
 const WordExtractor = require("word-extractor");
 const vision = require('@google-cloud/vision');
+const bcrypt = require('bcrypt');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -34,10 +35,11 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+    let password = await bcrypt.hash(req.body.password, 10);
     let hunter = await db.Hunter.create({
         name : req.body.name,
         email : req.body.email,
-        password : req.body.password,
+        password : password,
     });
     res.send(hunter);
 });
@@ -46,9 +48,10 @@ router.patch("/:id", async (req, res) => {
     let hunter = await db.Hunter.findById(req.params.id);
     if(!hunter) res.send({ messages : "data not found" });
     
+    let password = await bcrypt.hash(req.body.password, 10);
     hunter.name = req.body.name;
     hunter.email = req.body.email;
-    hunter.password = req.body.password;
+    hunter.password = password;
 
     hunter = await hunter.save();
     res.send(hunter);
