@@ -48,7 +48,8 @@ db.Vacancy = db.seq.define("vacancies", {
 	position_name : Sequelize.STRING,
 	salary_start : Sequelize.INTEGER,
 	salary_end : Sequelize.INTEGER,
-	description : Sequelize.STRING
+	description : Sequelize.STRING,
+	status : Sequelize.INTEGER
 }, { timestamps: false, underscored: true });
 
 db.Requirement = db.seq.define("requirements", {
