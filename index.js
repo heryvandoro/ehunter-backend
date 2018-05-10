@@ -1,8 +1,10 @@
 const app = require('express')();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const PORT = 3000;
 
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.use(cors());
 
 app.use('/hunters', require("./controllers/HunterController.js"));
 app.use('/companies', require("./controllers/CompanyController.js"));
