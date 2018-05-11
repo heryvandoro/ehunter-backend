@@ -28,7 +28,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     let hunter = await db.Hunter.findById(req.params.id, {
-        include : [ { model : db.Vacancy, include : [ { model : db.Company } ] } ]
+        include : [ { model : db.Vacancy, include : [ { model : db.Company }, { model : db.Hunter } ] } ]
     });
     if(!hunter) res.send({ messages : "data not found" });
     res.send(hunter);
