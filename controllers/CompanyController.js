@@ -31,12 +31,15 @@ router.post("/", async (req, res) => {
 router.patch("/:id", async (req, res) => {
     let company = await db.Company.findById(req.params.id);
     if(!company) res.send({ messages : "data not found" });
+
+    company.name != req.body.name ? company.name = req.body.name : "";
+    company.email != req.body.email ? company.email = req.body.email : "";
+    company.description != req.body.description ? company.description = req.body.description : "";
     
-    let password = await bcrypt.hash(req.body.password, 10);
-    company.name = req.body.name;
-    company.email = req.body.email;
-    company.password = password;
-    company.description = req.body.description;
+    if(req.body.password != undefined && req.body.password != company.password){
+        let password = await bcrypt.hash(req.body.password, 10);
+        company.password = password;
+    }
 
     company = await company.save();
     res.send(company);
