@@ -87,7 +87,7 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
                 chunks.forEach(c => { result += `${c} `; });
                 return resolve();
             });
-        })
+        });
     }else if(["doc", "docx"].indexOf(ext) !== -1){
         let extractor = new WordExtractor();
         let extracted = await extractor.extract(file.path);
