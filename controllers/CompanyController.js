@@ -50,4 +50,23 @@ router.delete("/:id", async (req, res) => {
     res.send({ messages : "success" });
 });
 
+router.post("/login", async (req, res) => {
+    let email = req.body.email;
+    let password = req.body.password;
+
+    let company = await db.Company.findOne({
+        where : { email : email }
+    });
+
+    if(company == null) res.send({ messages : "Wrong credentials data!" });
+
+    bcrypt.compare(password, company.password, async function(err, result) {
+        if(result) {
+            res.send(company);
+        } else {
+            res.send({ error : { messages : "Wrong credentials data!" } });
+        }
+    });
+});
+
 module.exports = router;
