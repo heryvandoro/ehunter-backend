@@ -1,8 +1,11 @@
-const app = require('express')();
+const express = require('express');
+const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const PORT = 3000;
 
+app.use("/images", express.static('images'));
+app.use("/uploads", express.static('uploads'));
 app.use(bodyParser.json());
 app.use(cors());
 

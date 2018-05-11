@@ -1,6 +1,8 @@
 const Sequelize = require('sequelize-hierarchy')();
 const db = {};
 
+const BASE_URL = "http://localhost:3000";
+
 db.seq = new Sequelize('ehunter', 'ehunter', 'ehunter_ehunter', {
 	host: 'mahirkoding.com',
 	dialect: 'mysql',
@@ -35,6 +37,12 @@ db.Company = db.seq.define("companies", {
 	name : Sequelize.STRING,
 	email : Sequelize.STRING,
 	password : Sequelize.STRING,
+	logo : {
+		type : Sequelize.STRING,
+		get() {
+			return BASE_URL+"/images/"+this.getDataValue('logo');
+		}
+	},	
 	description : Sequelize.STRING
 }, { timestamps: false, underscored: true });
 
