@@ -24,6 +24,7 @@ db.Hunter = db.seq.define("hunters", {
 	name : Sequelize.STRING,
 	email : Sequelize.STRING,
 	password : Sequelize.STRING,
+	bio : Sequelize.STRING,
 	cv : Sequelize.STRING,
 	cv_raw : Sequelize.STRING
 }, { timestamps: false, underscored: true });

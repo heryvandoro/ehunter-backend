@@ -47,11 +47,15 @@ router.post("/", async (req, res) => {
 router.patch("/:id", async (req, res) => {
     let hunter = await db.Hunter.findById(req.params.id);
     if(!hunter) res.send({ messages : "data not found" });
-    
-    let password = await bcrypt.hash(req.body.password, 10);
-    hunter.name = req.body.name;
-    hunter.email = req.body.email;
-    hunter.password = password;
+
+    hunter.name !== req.body.name ? hunter.name = req.body.name : "";
+    hunter.email !== req.body.email ? hunter.email = req.body.email : "";
+    hunter.bio !== req.body.bio ? hunter.bio = req.body.bio : "";
+
+    if(req.body.password != null){
+        let password = await bcrypt.hash(req.body.password, 10);
+        hunter.password = password;
+    }
 
     hunter = await hunter.save();
     res.send(hunter);
