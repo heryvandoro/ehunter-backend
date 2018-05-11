@@ -110,4 +110,23 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
     res.send(hunter);
 });
 
+router.post("/login", async (req, res) => {
+    let email = req.body.email;
+    let password = req.body.password;
+
+    let hunter = await db.Hunter.findOne({
+        where : { email : email }
+    });
+
+    if(hunter == null) res.send({ messages : "Wrong credentials data!" });
+
+    bcrypt.compare(password, hunter.password, async function(err, result) {
+        if(result) {
+            res.send(hunter);
+        } else {
+            res.send({ error : { messages : "Wrong credentials data!" } });
+        }
+    });
+});
+
 module.exports = router;
