@@ -64,7 +64,7 @@ router.post("/login", async (req, res) => {
         if(result) {
             res.send(company);
         } else {
-            res.send({ error : { messages : "Wrong credentials data!" } });
+            res.send({ messages : "Wrong credentials data!" });
         }
     });
 });

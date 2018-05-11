@@ -124,7 +124,7 @@ router.post("/login", async (req, res) => {
         if(result) {
             res.send(hunter);
         } else {
-            res.send({ error : { messages : "Wrong credentials data!" } });
+            res.send({ messages : "Wrong credentials data!" });
         }
     });
 });
