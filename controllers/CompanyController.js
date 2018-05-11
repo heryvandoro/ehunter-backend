@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     let company = await db.Company.findById(req.params.id, {
-        include : [ { model : db.Vacancy } ]
+        include : [ { model : db.Vacancy, include : [ { model : db.Company }, { model : db.Hunter } ] } ]
     });
     if(!company) res.send({ messages : "data not found" });
     res.send(company);
