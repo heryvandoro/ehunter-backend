@@ -12,7 +12,6 @@ app.use(cors());
 app.use('/hunters', require("./controllers/HunterController.js"));
 app.use('/companies', require("./controllers/CompanyController.js"));
 app.use('/vacancies', require("./controllers/VacancyController.js"));
-app.use('/categories', require("./controllers/CategoryController.js"));
 app.use('/tasks', require("./controllers/TaskController.js"));
 
 app.get('/', (req, res) => res.send('E-hunter API'));

@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize-hierarchy')();
+const Sequelize = require('sequelize');
 const db = {};
 
 const BASE_URL = "http://localhost:3000";
@@ -76,20 +76,11 @@ db.Requirement = db.seq.define("requirements", {
 	text : Sequelize.STRING
 }, { timestamps: false, underscored: true });
 
-db.Category = db.seq.define("categories", {
-	id : {
-		type : Sequelize.INTEGER,
-		primaryKey : true,
-		autoIncrement: true
-	},
-	name : Sequelize.STRING,
-	parent_id : Sequelize.INTEGER
-}, { timestamps: false, underscored: true });
-
 db.HunterVacancy = db.seq.define("hunter_vacancy", {
 	hunter_id : Sequelize.INTEGER,
 	vacancy_id : Sequelize.INTEGER,
-	status : Sequelize.INTEGER
+	result : Sequelize.STRING,
+	score : Sequelize.INTEGER
 }, { timestamps: false, underscored: true, freezeTableName : true });
 
 db.Task = db.seq.define("tasks", {
@@ -109,18 +100,5 @@ db.Vacancy.hasMany(db.Requirement);
 db.Requirement.belongsTo(db.Vacancy);
 db.Hunter.belongsToMany(db.Vacancy, { through: db.HunterVacancy });
 db.Vacancy.belongsToMany(db.Hunter, { through: db.HunterVacancy });
-db.Category.isHierarchy({
-    foreignKey : "parent_id",
-    throughKey : "children_id",
-    through : "categories_ancestor",
-    throughForeignKey : "parent_id",
-    throughTable : "categories_ancestor",
-    throughForeignKey : "parent_id",
-    ancestorsAs : "parents",
-    descendentsAs : "childrens"
-});
-
-/* Others */
-db.Category.rebuildHierarchy();
 
 module.exports = db;

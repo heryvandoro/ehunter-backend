@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const Sequelize = require('sequelize-hierarchy')();
 const db = require("../db.js");
 
 router.get("/", async (req, res) => {
@@ -10,7 +11,8 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     let vacancy = await db.Vacancy.findById(req.params.id, {
-        include : [ { model : db.Requirement }, { model : db.Hunter }, { model : db.Company } ]
+        include : [ { model : db.Requirement }, { model : db.Hunter }, { model : db.Company } ],
+        order : [ [db.Hunter, db.HunterVacancy, "score", "DESC"] ]
     });
     if(!vacancy) res.send({ messages : "data not found" });
     res.send(vacancy);
