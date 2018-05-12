@@ -105,7 +105,6 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
     }else{
         res.send({ messages : "format file undefined" })
     }
-    //console.log(result);
     result = result.replace(/\s\s+/g, ' ');
     result = result.replace(/[^\w\s]/gi, '');
     hunter.cv_raw = result;

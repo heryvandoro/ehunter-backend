@@ -92,6 +92,16 @@ db.HunterVacancy = db.seq.define("hunter_vacancy", {
 	status : Sequelize.INTEGER
 }, { timestamps: false, underscored: true, freezeTableName : true });
 
+db.Task = db.seq.define("tasks", {
+	id : {
+		type : Sequelize.INTEGER,
+		primaryKey : true,
+		autoIncrement: true
+	},
+	vacancy_id : Sequelize.INTEGER,
+	criteria : Sequelize.STRING
+}, { timestamps: false, underscored: true });
+
 /* Relations Section */
 db.Company.hasMany(db.Vacancy);
 db.Vacancy.belongsTo(db.Company);
