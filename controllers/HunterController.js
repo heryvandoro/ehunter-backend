@@ -8,6 +8,7 @@ const WordExtractor = require("word-extractor");
 const vision = require('@google-cloud/vision');
 const Storage = require('@google-cloud/storage');
 const bcrypt = require('bcrypt');
+const rimraf = require('rimraf');
 
 const cloudStorage = new Storage({
     keyFilename: 'ehunter_key_google.json'
@@ -84,6 +85,7 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
     let result = "";
 
     await cloudStorage.bucket("ehunter").upload(file.path);
+    rimraf('./uploads/*', ()=>{});
 
     if(["xls", "xlsx"].indexOf(ext) !== -1){
         let workbook = XLSX.readFile(file.path);

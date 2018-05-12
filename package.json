@@ -27,6 +27,7 @@
     "mysql2": "^1.5.3",
     "node-pdftotext": "^1.0.4",
     "pdf-text": "^0.4.0",
+    "rimraf": "^2.6.2",
     "sequelize": "^4.37.7",
     "sequelize-hierarchy": "^1.3.2",
     "word-extractor": "^0.1.4",
