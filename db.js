@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const db = {};
 
 const BASE_URL = "http://localhost:3000";
+const GOOGLE_STORAGE = "https://storage.cloud.google.com/ehunter";
 
 db.seq = new Sequelize('ehunter', 'ehunter', 'ehunter_ehunter', {
 	host: 'mahirkoding.com',
@@ -28,7 +29,7 @@ db.Hunter = db.seq.define("hunters", {
 	cv : {
 		type : Sequelize.STRING,
 		get() {
-			return BASE_URL+"/uploads/"+this.getDataValue('cv');
+			return GOOGLE_STORAGE+"/"+this.getDataValue('cv');
 		}
 	},	
 	cv_raw : Sequelize.STRING
@@ -46,7 +47,7 @@ db.Company = db.seq.define("companies", {
 	logo : {
 		type : Sequelize.STRING,
 		get() {
-			return BASE_URL+"/images/"+this.getDataValue('logo');
+			return GOOGLE_STORAGE+"/"+this.getDataValue('logo');
 		}
 	},	
 	description : Sequelize.STRING

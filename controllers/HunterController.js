@@ -6,7 +6,12 @@ const XLSX = require('xlsx');
 const pdfText = require('pdf-text')
 const WordExtractor = require("word-extractor");
 const vision = require('@google-cloud/vision');
+const Storage = require('@google-cloud/storage');
 const bcrypt = require('bcrypt');
+
+const cloudStorage = new Storage({
+    keyFilename: 'ehunter_key_google.json'
+});
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -77,6 +82,8 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
     let file_name = file.filename;
     let ext = file_name.substr(file_name.lastIndexOf(".") + 1, 4);
     let result = "";
+
+    await cloudStorage.bucket("ehunter").upload(file.path);
 
     if(["xls", "xlsx"].indexOf(ext) !== -1){
         let workbook = XLSX.readFile(file.path);
