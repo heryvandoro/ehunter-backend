@@ -31,8 +31,17 @@ db.Hunter = db.seq.define("hunters", {
 		get() {
 			return GOOGLE_STORAGE+"/"+this.getDataValue('cv');
 		}
+	},
+	cv_raw : Sequelize.STRING,
+	ktp_raw : Sequelize.STRING,
+	ktp : {
+		type : Sequelize.STRING,
+		get() {
+			let ktp = this.getDataValue('ktp');
+			if(!ktp) return null;
+			return GOOGLE_STORAGE+"/"+ktp;
+		}
 	},	
-	cv_raw : Sequelize.STRING
 }, { timestamps: false, underscored: true });
 
 db.Company = db.seq.define("companies", {

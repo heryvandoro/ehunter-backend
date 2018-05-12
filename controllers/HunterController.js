@@ -119,6 +119,38 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
     hunter.cv_raw = result;
     hunter.cv = file_name;
     await hunter.save();
+    res.send({ messages : "success" });
+});
+
+router.post("/:id/uploadktp", upload.single("file"), async (req, res) => {
+    let hunter = await db.Hunter.findById(req.params.id);
+    if(!hunter) res.send({ messages : "data not found" });
+
+    let file = req.file;
+    let file_name = file.filename;
+    let ext = file_name.substr(file_name.lastIndexOf(".") + 1, 4);
+    let result = "";
+
+    await cloudStorage.bucket("ehunter").upload(file.path);
+    rimraf('./uploads/*', ()=>{});
+
+    if(["jpg", "png", "jpeg"].indexOf(ext) !== -1){
+        const client = new vision.ImageAnnotatorClient({
+            keyFilename: 'ehunter_key_google.json'
+        });
+        let text_detect = await client.textDetection(file.path);
+        result = text_detect[0].fullTextAnnotation.text;
+        result = result.replace(/\s\s+/g, ' ');
+        result = result.replace(/[^\w\s]/gi, '');
+
+        if(result.toLocaleLowerCase().indexOf(hunter.name.toLocaleLowerCase()) == -1) res.send({ messages : "wrong ktp data!" });
+        hunter.gender = result.toLocaleLowerCase().indexOf("laki-laki") != -1 ? "male" : "female";
+    }else{
+        res.send({ messages : "format file undefined" });
+    }
+    hunter.ktp_raw = result;
+    hunter.ktp = file_name;
+    await hunter.save();
     res.send(hunter);
 });
 
