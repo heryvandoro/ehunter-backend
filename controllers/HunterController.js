@@ -84,9 +84,6 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
     let ext = file_name.substr(file_name.lastIndexOf(".") + 1, 4);
     let result = "";
 
-    await cloudStorage.bucket("ehunter").upload(file.path);
-    rimraf('./uploads/*', ()=>{});
-
     if(["xls", "xlsx"].indexOf(ext) !== -1){
         let workbook = XLSX.readFile(file.path);
         let sheets = workbook.SheetNames;
@@ -109,11 +106,29 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
         const client = new vision.ImageAnnotatorClient({
             keyFilename: 'ehunter_key_google.json'
         });
+        let label_detect = await client.labelDetection(file.path);
+        let temp = label_detect[0].labelAnnotations;
+        let text_found = false;
+        let obj = null;
+        temp.forEach((data, i) => {
+            if(data.description.toLocaleLowerCase() == "text") {
+                text_found = true;
+                obj = data;
+            }
+        });
+        if(!text_found) return res.send({ messages : "text undefined in your images" });
+
+        if(obj.score * 100 < 60)  res.send({ messages : "the picture contains only a small amount of text" });
+
         let text_detect = await client.textDetection(file.path);
         result = text_detect[0].fullTextAnnotation.text;
     }else{
         res.send({ messages : "format file undefined" })
     }
+
+    await cloudStorage.bucket("ehunter").upload(file.path);
+    rimraf('./uploads/*', ()=>{});
+
     result = result.replace(/\s\s+/g, ' ');
     result = result.replace(/[^\w\s]/gi, '');
     hunter.cv_raw = result;
@@ -131,9 +146,6 @@ router.post("/:id/uploadktp", upload.single("file"), async (req, res) => {
     let ext = file_name.substr(file_name.lastIndexOf(".") + 1, 4);
     let result = "";
 
-    await cloudStorage.bucket("ehunter").upload(file.path);
-    rimraf('./uploads/*', ()=>{});
-
     if(["jpg", "png", "jpeg"].indexOf(ext) !== -1){
         const client = new vision.ImageAnnotatorClient({
             keyFilename: 'ehunter_key_google.json'
@@ -148,10 +160,14 @@ router.post("/:id/uploadktp", upload.single("file"), async (req, res) => {
     }else{
         res.send({ messages : "format file undefined" });
     }
+
+    await cloudStorage.bucket("ehunter").upload(file.path);
+    rimraf('./uploads/*', ()=>{});
+
     hunter.ktp_raw = result;
     hunter.ktp = file_name;
     await hunter.save();
-    res.send(hunter);
+    res.send({ messages : "success"});
 });
 
 router.post("/login", async (req, res) => {
