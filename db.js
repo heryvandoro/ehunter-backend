@@ -25,7 +25,12 @@ db.Hunter = db.seq.define("hunters", {
 	email : Sequelize.STRING,
 	password : Sequelize.STRING,
 	bio : Sequelize.STRING,
-	cv : Sequelize.STRING,
+	cv : {
+		type : Sequelize.STRING,
+		get() {
+			return BASE_URL+"/uploads/"+this.getDataValue('cv');
+		}
+	},	
 	cv_raw : Sequelize.STRING
 }, { timestamps: false, underscored: true });
 

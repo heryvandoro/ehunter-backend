@@ -18,6 +18,13 @@ router.get("/:id", async (req, res) => {
     res.send(company);
 });
 
+router.get("/:id/pendings", async (req, res) => {
+    let vacancies = await db.Vacancy.findAll({
+        where : { company_id : req.params.id, status : 0 }
+    });
+    res.send(vacancies);
+});
+
 router.post("/", async (req, res) => {
     let password = await bcrypt.hash(req.body.password, 10);
     let company = await db.Company.create({
