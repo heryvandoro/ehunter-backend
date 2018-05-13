@@ -90,7 +90,9 @@ db.HunterVacancy = db.seq.define("hunter_vacancy", {
 	hunter_id : Sequelize.INTEGER,
 	vacancy_id : Sequelize.INTEGER,
 	result : Sequelize.STRING,
-	score : Sequelize.INTEGER
+	score : Sequelize.INTEGER,
+	reason : Sequelize.STRING,
+	feedback : Sequelize.STRING,
 }, { timestamps: false, underscored: true, freezeTableName : true });
 
 db.Task = db.seq.define("tasks", {

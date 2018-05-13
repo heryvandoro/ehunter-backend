@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Sequelize = require('sequelize-hierarchy')();
 const db = require("../db.js");
+const gmail = require('gmail-send');
 
 router.get("/", async (req, res) => {
     let vacancies = await db.Vacancy.findAll({
@@ -15,6 +16,26 @@ router.get("/:id", async (req, res) => {
         order : [ [db.Hunter, db.HunterVacancy, "score", "DESC"] ]
     });
     if(!vacancy) res.send({ messages : "data not found" });
+    res.send(vacancy);
+});
+
+router.get("/:id/email", async (req, res) => {
+    let vacancy = await db.Vacancy.findById(req.params.id, {
+        include : [ { model : db.Hunter } ]
+    });
+    if(!vacancy) res.send({ messages : "data not found" });
+    vacancy.hunters.forEach(h => {
+        let text = `Your score : ${h.hunter_vacancy.score }\n\n`
+        text += `${h.hunter_vacancy.reason}\n\n${h.hunter_vacancy.feedback}`
+        gmail({
+            user: 'petrik.bob99@gmail.com',
+            pass: 'petrik99',
+            to:   h.email,
+            from : 'info@ehunter.com',
+            subject: 'Info eHunter',
+            text: text, 
+        })({});
+    });
     res.send(vacancy);
 });
 
