@@ -4,8 +4,8 @@ const db = {};
 const BASE_URL = "http://localhost:3000";
 const GOOGLE_STORAGE = "https://storage.cloud.google.com/ehunter";
 
-db.seq = new Sequelize('ehunter', 'ehunter', 'ehunter_ehunter', {
-	host: 'mahirkoding.com',
+db.seq = new Sequelize('db_name', 'username', 'password', {
+	host: 'localhost',
 	dialect: 'mysql',
 	operatorsAliases : Sequelize.op,
 	pool: {
@@ -29,6 +29,8 @@ db.Hunter = db.seq.define("hunters", {
 	cv : {
 		type : Sequelize.STRING,
 		get() {
+			let cv = this.getDataValue('cv');
+			if(!cv) return null;
 			return GOOGLE_STORAGE+"/"+this.getDataValue('cv');
 		}
 	},
