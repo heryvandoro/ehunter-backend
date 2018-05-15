@@ -8,6 +8,16 @@ This is a backend repository for eHunter - CV Filtering System. Built with NodeJ
 - Place at the root project folder, and config `constant.js` based on your key name. 
 - run `index.js` with your preferred tool. (maybe nodemon/pm2)
 
+## Features
+- Import CV with several filetypes (.doc, .docx, .pdf, .jpg, .png, .jpeg, .xls, .xlsx)
+- Download report as xls
+- Ranking and sorting system by scoring
+- Filter CV based on criteria (gender, skills, degree status, gpa score)
+- Cloud Storage integrated for storing files.
+- Auto reporting by email
+- 2 layer verification by uploading ID Card (check card holder name with registered name)
+- Send feedback automatically by email.
+
 ## Credits
 * Hery Vandoro
 * Mario Viegash
