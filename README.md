@@ -1,4 +1,4 @@
-## eHunter - CV Filtering
+## eHunter - CV Filtering (Backend)
 
 ![](https://github.com/heryvandoro/ehunter-backend/blob/master/images/logo.png?raw=true)
 
