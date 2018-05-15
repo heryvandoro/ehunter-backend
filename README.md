@@ -1,4 +1,7 @@
 ## eHunter - CV Filtering
+
+![](https://github.com/heryvandoro/ehunter-backend/blob/master/images/logo.png?raw=true)
+
 This is a backend repository for eHunter - CV Filtering System. Built with NodeJS (ExpressJS + SequelizeJS ORM)
 
 ## How to use
