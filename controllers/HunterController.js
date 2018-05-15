@@ -9,9 +9,14 @@ const vision = require('@google-cloud/vision');
 const Storage = require('@google-cloud/storage');
 const bcrypt = require('bcrypt');
 const rimraf = require('rimraf');
+const constant = require("../constant.js")
 
 const cloudStorage = new Storage({
-    keyFilename: 'ehunter_key_google.json'
+    keyFilename: constant.GOOGLE_VISION_KEY
+});
+
+const imageAnnotatorClient = new vision.ImageAnnotatorClient({
+    keyFilename: constant.GOOGLE_VISION_KEY
 });
 
 const storage = multer.diskStorage({
@@ -103,10 +108,7 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
         let extracted = await extractor.extract(file.path);
         result = extracted.getBody();
     }else if(["png", "jpg", "jpeg"].indexOf(ext) !== -1){
-        const client = new vision.ImageAnnotatorClient({
-            keyFilename: 'ehunter_key_google.json'
-        });
-        let label_detect = await client.labelDetection(file.path);
+        let label_detect = await imageAnnotatorClient.labelDetection(file.path);
         let temp = label_detect[0].labelAnnotations;
         let text_found = false;
         let obj = null;
@@ -120,7 +122,7 @@ router.post("/:id/uploadcv", upload.single("file"), async (req, res) => {
 
         if(obj.score * 100 < 60)  res.send({ messages : "the picture contains only a small amount of text" });
 
-        let text_detect = await client.textDetection(file.path);
+        let text_detect = await imageAnnotatorClient.textDetection(file.path);
         result = text_detect[0].fullTextAnnotation.text;
     }else{
         res.send({ messages : "format file undefined" })
@@ -147,10 +149,7 @@ router.post("/:id/uploadktp", upload.single("file"), async (req, res) => {
     let result = "";
 
     if(["jpg", "png", "jpeg"].indexOf(ext) !== -1){
-        const client = new vision.ImageAnnotatorClient({
-            keyFilename: 'ehunter_key_google.json'
-        });
-        let text_detect = await client.textDetection(file.path);
+        let text_detect = await imageAnnotatorClient.textDetection(file.path);
         result = text_detect[0].fullTextAnnotation.text;
         result = result.replace(/\s\s+/g, ' ');
         result = result.replace(/[^\w\s]/gi, '');
