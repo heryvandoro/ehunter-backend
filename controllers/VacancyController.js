@@ -2,6 +2,7 @@ const router = require('express').Router();
 const Sequelize = require('sequelize-hierarchy')();
 const db = require("../db.js");
 const gmail = require('gmail-send');
+const constant = require("../constant.js");
 
 router.get("/", async (req, res) => {
     let vacancies = await db.Vacancy.findAll({
@@ -28,8 +29,8 @@ router.get("/:id/email", async (req, res) => {
         let text = `Your score : ${h.hunter_vacancy.score }\n\n`
         text += `${h.hunter_vacancy.reason}\n\n${h.hunter_vacancy.feedback}`
         gmail({
-            user: 'petrik.bob99@gmail.com',
-            pass: 'petrik99',
+            user: constant.GMAIL_SMTP.EMAIL,
+            pass: constant.GMAIL_SMTP.PASSWORD,
             to:   h.email,
             from : 'info@ehunter.com',
             subject: 'Info eHunter',
